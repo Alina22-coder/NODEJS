@@ -1,5 +1,14 @@
-console.log('Hello from Node JS');
+const express = require('express');
 
-console.log(__dirname);
-console.log(__filename);
-console.log(process.cwd());
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
+
+app.listen(3000, () => {
+    console.log('Server running on port 3000! http://localhost:3000');
+});
