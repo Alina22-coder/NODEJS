@@ -28,7 +28,7 @@ class UserRepository {
         const users = await read();
         const index = users.findIndex(user => user.id === Number(id));
         user.id = id;
-        users[index]= users;
+        users[index]= user;
         await write(users);
         return user;
     }
