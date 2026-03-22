@@ -10,7 +10,6 @@ app.use(express.urlencoded({extended: true}));
 
 app.use('/', apiRouter);
 
-
 const dbConnection = async () => {
     let dbCon = false;
 
