@@ -1,15 +1,29 @@
+/* eslint-disable no-console */
+
+import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import mongoose from "mongoose";
-import {config} from "./configs/config";
-import {apiRouter} from "./routers/api.router";
+
+import { config } from "./configs/config";
+import { ApiError } from "./errors/api.error";
+import { apiRouter } from "./routers/api.router";
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
-app.use('/', apiRouter);
+app.use("/", apiRouter);
 
+app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
+    const status = err.status || 500;
+    const message = err.message ?? "Something went wrong";
+    res.status(status).json({ status, message });
+});
+process.on("uncaughtException", (err) => {
+    console.log("uncaughtException", err);
+    process.exit(1);
+});
 
 const dbConnection = async () => {
     let dbCon = false;
@@ -17,29 +31,27 @@ const dbConnection = async () => {
     while (!dbCon) {
         try {
             console.log("DB Connection Connected");
-            await mongoose.connect(config.MONGODB_URI);
+            await mongoose.connect(config.MONGODB_URI!);
             dbCon = true;
             console.log("MongoDB Connection Connected +++++++++++");
-
-        } catch (e) {
-            console.error('MongoDB Connection Error: ', e.message);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (e: any) {
+            console.error("MongoDB Connection Error: ", e.message);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
     }
-}
+};
 
 const start = async () => {
     try {
         await dbConnection();
         app.listen(config.PORT, () => {
             console.log(`Listening on port ${config.PORT}`);
-        })
-    } catch (e) {
-        console.error('MongoDB Connection Error: ', e.message);
+        });
+    } catch (e: any) {
+        console.error("MongoDB Connection Error: ", e.message);
     }
-}
+};
 
 start().catch((e) => {
-    console.error('Fatal error:', e);
+    console.error("Fatal error:", e);
 });
-

@@ -1,7 +1,8 @@
-import {Request, Response} from "express";
-import {userService} from "../services/user.service";
-import {IUserDTO} from "../interfaces/user.interface";
-import {StatusCodesEnum} from "../enums/status-codes";
+import type { Request, Response } from "express";
+
+import { StatusCodesEnum } from "../enums/status-codes";
+import type { IUserDTO } from "../interfaces/user.interface";
+import { userService } from "../services/user.service";
 
 class UserController {
     public async getAll(req: Request, res: Response) {

@@ -1,14 +1,14 @@
-import {IUser, IUserDTO} from "../interfaces/user.interface";
-import {userRepository} from "../repositories/user.repository";
+import type { IUser, IUserDTO } from "../interfaces/user.interface";
+import { userRepository } from "../repositories/user.repository";
 
 class UserService {
-    public getAll(): Promise<IUser[]>{
+    public getAll(): Promise<IUser[]> {
         return userRepository.getAll();
     }
-    public create(user:IUserDTO): Promise<IUser>{
+    public create(user: IUserDTO): Promise<IUser> {
         return userRepository.create(user);
     }
-    public getById(userId:string): Promise<IUser>{
+    public getById(userId: string): Promise<IUser> {
         return userRepository.getById(userId);
     }
 }
