@@ -8,12 +8,25 @@ const router = Router();
 
 router.get("/", userController.getAll);
 
-router.get("/:id", userController.getById);
+router.get("/:id", commonMiddleware.isValidate("id"), userController.getById);
 
 router.post(
     "/",
     commonMiddleware.validateBody(UserValidator.create),
     userController.create,
+);
+
+router.put(
+    "/:id",
+    commonMiddleware.isValidate("id"),
+    commonMiddleware.validateBody(UserValidator.update),
+    userController.updateById,
+);
+
+router.delete(
+    "/:id",
+    commonMiddleware.isValidate("id"),
+    userController.deleteById,
 );
 
 export const userRouter = router;

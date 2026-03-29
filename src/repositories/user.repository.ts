@@ -5,22 +5,22 @@ class UserRepository {
     public getAll(): Promise<IUser[]> {
         return User.find();
     }
+
     public create(user: IUserDTO): Promise<IUser> {
         return User.create(user);
     }
-    // public getById(userId: string): Promise<IUser>{
-    //     return User.findById(userId);
-    // }
 
-    public async getById(userId: string): Promise<IUser> {
-        const user = await User.findById(userId).exec();
-        if (!user) throw new Error("User not found");
-        return user;
+    public getById(userId: string): Promise<IUser> {
+        return User.findById(userId);
     }
 
-    // public update(userId: string): Promise<IUser>{
-    //     return User.updateOne()
-    // }
+    public updateById(userId: string, user: IUserDTO): Promise<IUser> {
+        return User.findByIdAndUpdate(userId, user);
+    }
+
+    public deleteById(userId: string): Promise<IUser> {
+        return User.findByIdAndDelete(userId);
+    }
 }
 
 export const userRepository = new UserRepository();
