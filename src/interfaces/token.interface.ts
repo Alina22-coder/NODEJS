@@ -8,6 +8,8 @@ export interface IToken extends IBase {
     _userId: string
 }
 
+export type ITokenModel = Pick<IToken, 'accessToken' | 'refreshToken' | '_userId'>;
+
 export interface ITokenPayload {
     userId: string,
     role: RoleEnum
