@@ -2,7 +2,7 @@ import { config } from "../configs/config";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import jwt from "jsonwebtoken";
 import { ApiError } from "../errors/api.error";
-import { StatusCodeEnum } from "../enums/status-code.enum";
+import { StatusCodesEnum } from "../enums/status-code.enum";
 import { tokenRepository } from "../repositories/token.repository";
 
 class TokenService {
@@ -33,13 +33,13 @@ class TokenService {
                     break;
 
                 default:
-                    throw new ApiError('Invalid token type', StatusCodeEnum.BAD_REQUEST)
+                    throw new ApiError('Invalid token type', StatusCodesEnum.BAD_REQUEST)
             }
 
             return jwt.verify(token, secret) as ITokenPayload;
 
         } catch (e) {
-            throw new ApiError('Invalid token', StatusCodeEnum.UNAUTHORIZED);
+            throw new ApiError('Invalid token', StatusCodesEnum.UNAUTHORIZED);
         }
     }
 

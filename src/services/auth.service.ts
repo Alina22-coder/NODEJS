@@ -5,7 +5,7 @@ import { tokenService } from './token.service';
 import { tokenRepository } from '../repositories/token.repository';
 import { userRepository } from '../repositories/user.repository';
 import { ApiError } from '../errors/api.error';
-import { StatucCodeEnum } from '../enums/status-code.enum';
+import { StatusCodesEnum } from '../enums/status-code.enum';
 import { IAuth } from '../interfaces/auth.interface';
 
 export class AuthService {
@@ -25,16 +25,21 @@ export class AuthService {
         const user = await userRepository.getByEmail(dto.email);
 
         if (!user) {
-            throw new ApiError('Invalid email or password', StatucCodeEnum.UNAUTHORIZED);
+            throw new ApiError('Invalid email or password', StatusCodesEnum.UNAUTHORIZED);
         }
 
         const isValidPassword = await passwordService.comparePassword(dto.password, user.password);
 
-        if (!isValidPassword) {
-            throw new ApiError('Invalid email or password', StatucCodeEnum.UNAUTHORIZED);
+        if (!user.isActive) {
+            throw new ApiError('Account is not active', StatusCodesEnum.FORBIDDEN);
+
         }
 
-        const tokens = tokenService.generate({
+        if (!isValidPassword) {
+            throw new ApiError('Invalid email or password', StatusCodesEnum.UNAUTHORIZED);
+        }
+
+        const tokens = tokenService.generateTokens({
             userId: user._id,
             role: user.role
         });

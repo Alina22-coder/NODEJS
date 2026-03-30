@@ -1,5 +1,5 @@
 import { ApiError } from "../errors/api.error";
-import { StatusCodeEnum } from "../enums/status-code.enum";
+import { StatusCodesEnum } from "../enums/status-code.enum";
 import type { IUser, IUserCreateDTO, IUserUpdateDTO } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
 
@@ -16,7 +16,7 @@ class UserService {
         const user = await userRepository.getById(userId);
 
         if (!user) {
-            throw new ApiError('User not found', StatusCodeEnum.NOT_FOUND)
+            throw new ApiError('User not found', StatusCodesEnum.NOT_FOUND)
 
         }
 
@@ -27,7 +27,7 @@ class UserService {
         const data = await userRepository.getById(userId);
 
         if (!data) {
-            throw new ApiError('User not found', StatusCodeEnum.NOT_FOUND)
+            throw new ApiError('User not found', StatusCodesEnum.NOT_FOUND)
 
         }
 
@@ -38,7 +38,7 @@ class UserService {
         const data = await userRepository.getById(userId);
 
         if (!data) {
-            throw new ApiError('User not found', StatusCodeEnum.NOT_FOUND)
+            throw new ApiError('User not found', StatusCodesEnum.NOT_FOUND)
 
         }
 
@@ -49,8 +49,21 @@ class UserService {
         const user = await userRepository.getByEmail(email);
 
         if (user) {
-            throw new ApiError('User is already exists', StatusCodeEnum.BAD_REQUEST)
+            throw new ApiError('User is already exists', StatusCodesEnum.BAD_REQUEST)
         }
+    }
+
+    public async isActive(id: string): Promise<boolean> {
+        const user = await this.getById(id);
+        return user.isActive
+    }
+
+    public blockUser(user_id: string): Promise<IUser> {
+        return userRepository.blockUser(user_id)
+    }
+
+    public unBlockUser(user_id: string): Promise<IUser> {
+        return userRepository.unBlockUser(user_id)
     }
 }
 

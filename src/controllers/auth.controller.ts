@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { IUserCreateDTO } from '../interfaces/user.interface'
 import { authService } from '../services/auth.service'
-import { StatusCodeEnum } from '../enums/status-code.enum'
+import { StatusCodesEnum } from '../enums/status-code.enum'
 import { IAuth } from "../interfaces/auth.interface";
 import { ITokenPayload } from "../interfaces/token.interface";
 import { userService } from "../services/user.service";
@@ -13,7 +13,7 @@ class AuthController {
         try {
             const body = req.body as IUserCreateDTO;
             const data = await authService.singUp(body);
-            res.status(StatusCodeEnum.CREATED).json(data);
+            res.status(StatusCodesEnum.CREATED).json(data);
         } catch (e) {
             next(e)
         }
@@ -23,7 +23,7 @@ class AuthController {
         try {
             const dto = req.body as IAuth;
             const data = await authService.singIn(dto);
-            res.status(StatusCodeEnum.OK).json(data);
+            res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e)
         }
@@ -34,7 +34,7 @@ class AuthController {
             const tokenPayload = res.locals.tokenPayload as ITokenPayload;
             const { userId } = tokenPayload;
             const user = await userService.getById(userId);
-            res.status(StatusCodeEnum.OK).json(user);
+            res.status(StatusCodesEnum.OK).json(user);
         } catch (e) {
             next(e)
         }
@@ -45,7 +45,7 @@ class AuthController {
             const { userId, role } = req.res.locals.tokenPayoad as ITokenPayload;
             const tokens = tokenService.generateTokens({ userId, role });
             await tokenRepository.create({ ...tokens, _userId: userId });
-            res.status(StatusCodeEnum.OK).json(tokens);
+            res.status(StatusCodesEnum.OK).json(tokens);
         } catch (e) {
             next(e)
         }
