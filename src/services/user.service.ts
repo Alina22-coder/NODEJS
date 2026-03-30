@@ -1,23 +1,56 @@
-import type { IUser, IUserDTO } from "../interfaces/user.interface";
+import { ApiError } from "../errors/api.error";
+import { StatusCodeEnum } from "../enums/status-code.enum";
+import type { IUser, IUserCreateDTO, IUserUpdateDTO } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
     public getAll(): Promise<IUser[]> {
         return userRepository.getAll();
     }
-    public create(user: IUserDTO): Promise<IUser> {
+
+    public create(user: IUserCreateDTO): Promise<IUser> {
         return userRepository.create(user);
     }
-    public getById(userId: string): Promise<IUser> {
-        return userRepository.getById(userId);
+
+    public async getById(userId: string): Promise<IUser> {
+        const user = await userRepository.getById(userId);
+
+        if (!user) {
+            throw new ApiError('User not found', StatusCodeEnum.NOT_FOUND)
+
+        }
+
+        return user;
     }
 
-    public updateById(userId: string, user: IUserDTO): Promise<IUser> {
-        return userRepository.updateById(userId, user);
+    public async updateById(userId: string, user: IUserUpdateDTO): Promise<IUser> {
+        const data = await userRepository.getById(userId);
+
+        if (!data) {
+            throw new ApiError('User not found', StatusCodeEnum.NOT_FOUND)
+
+        }
+
+        return await userRepository.updateById(userId, user);
     }
 
-    public deleteById(userId: string): Promise<IUser> {
-        return userRepository.deleteById(userId);
+    public async deleteById(userId: string): Promise<void> {
+        const data = await userRepository.getById(userId);
+
+        if (!data) {
+            throw new ApiError('User not found', StatusCodeEnum.NOT_FOUND)
+
+        }
+
+        await userRepository.deleteById(userId);
+    }
+
+    public async isEmailUnique(email: string): Promise<void> {
+        const user = await userRepository.getByEmail(email);
+
+        if (user) {
+            throw new ApiError('User is already exists', StatusCodeEnum.BAD_REQUEST)
+        }
     }
 }
 
