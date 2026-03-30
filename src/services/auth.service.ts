@@ -7,6 +7,7 @@ import { userRepository } from '../repositories/user.repository';
 import { ApiError } from '../errors/api.error';
 import { StatusCodesEnum } from '../enums/status-code.enum';
 import { IAuth } from '../interfaces/auth.interface';
+import { emailService } from './email.service';
 
 export class AuthService {
     public async signUp(user: IUserCreateDTO): Promise<{ user: IUser, tokens: ITokenPair }> {
@@ -18,6 +19,7 @@ export class AuthService {
             role: newUser.role
         });
         await tokenRepository.create({ ...tokens, _userId: newUser._id });
+        await emailService.sendEmail();
         return { user: newUser, tokens }
     };
 
