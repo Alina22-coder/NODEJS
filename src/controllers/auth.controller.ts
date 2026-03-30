@@ -2,6 +2,11 @@ import { Request, Response, NextFunction } from "express"
 import { IUserCreateDTO } from '../interfaces/user.interface'
 import { authService } from '../services/auth.service'
 import { StatusCodeEnum } from '../enums/status-code.enum'
+import { IAuth } from "../interfaces/auth.interface";
+import { ITokenPayload } from "../interfaces/token.interface";
+import { userService } from "../services/user.service";
+import { tokenService } from "../services/token.service";
+import { tokenRepository } from "../repositories/token.repository";
 
 class AuthController {
     public async singUp(req: Request, res: Response, next: NextFunction) {
@@ -14,11 +19,33 @@ class AuthController {
         }
     }
 
-    public signIn(req: Request, res: Response, next: NextFunction) {
+    public async signIn(req: Request, res: Response, next: NextFunction) {
         try {
-            const dto = req.body as any;
+            const dto = req.body as IAuth;
             const data = await authService.singIn(dto);
             res.status(StatusCodeEnum.OK).json(data);
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    public async me(req: Request, res: Response, next: NextFunction) {
+        try {
+            const tokenPayload = res.locals.tokenPayload as ITokenPayload;
+            const { userId } = tokenPayload;
+            const user = await userService.getById(userId);
+            res.status(StatusCodeEnum.OK).json(user);
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    public async refresh(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { userId, role } = req.res.locals.tokenPayoad as ITokenPayload;
+            const tokens = tokenService.generateTokens({ userId, role });
+            await tokenRepository.create({ ...tokens, _userId: userId });
+            res.status(StatusCodeEnum.OK).json(tokens);
         } catch (e) {
             next(e)
         }

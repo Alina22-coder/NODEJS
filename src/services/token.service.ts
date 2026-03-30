@@ -3,8 +3,9 @@ import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import jwt from "jsonwebtoken";
 import { ApiError } from "../errors/api.error";
 import { StatusCodeEnum } from "../enums/status-code.enum";
+import { tokenRepository } from "../repositories/token.repository";
 
-export class TokenService {
+class TokenService {
     public generateTokens(payload: ITokenPayload): ITokenPair {
         const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
             expiresIn: config.JWT_ACCESS_LIFETIME
@@ -42,5 +43,11 @@ export class TokenService {
         }
     }
 
+    public async isTokenExists(token: string, type: 'accessToken' | 'refreshToken'): Promise<boolean> {
+        const iTokenPromise = await tokenRepository.findByParams({ [type]: token });
+        return !!iTokenPromise;
+    }
 
 }
+
+export const tokenService = new TokenService();
