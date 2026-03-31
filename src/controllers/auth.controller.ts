@@ -7,6 +7,13 @@ import { ITokenPayload } from "../interfaces/token.interface";
 import { userService } from "../services/user.service";
 import { tokenService } from "../services/token.service";
 import { tokenRepository } from "../repositories/token.repository";
+import { emailService } from "../services/email.service";
+import { emailConstants } from "../constants/email.constants";
+import { EmailEnum } from "../enums/email.enum";
+import { ActionTokenTypeEnum } from "../enums/action-token-type.enum";
+import { config } from "../configs/config";
+import { passwordService } from "../services/password.service";
+
 
 class AuthController {
     public async singUp(req: Request, res: Response, next: NextFunction) {
@@ -49,6 +56,48 @@ class AuthController {
         } catch (e) {
             next(e)
         }
+    }
+
+    public async activate(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { token } = req.params;
+            const user = await authService.activate(token)
+            res.status(StatusCodesEnum.OK).json(user)
+        } catch (e) {
+            next(e)
+        }
+
+    }
+
+    public async passwordRecoveryRequest(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email } = req.body;
+            const user = await userService.getByEmail(email);
+
+            if (!user) {
+                await authService.recoveryPasswordRequest(user);
+            }
+
+            res.status(StatusCodesEnum.OK).json({ details: 'Check your email' });
+
+        } catch (e) {
+            next(e)
+        }
+
+    }
+
+    public async recoveryPassword(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { token } = req.params as { token: string };
+            const { password } = req.body;
+
+            const user = await authService.recoveryPassword(token, password);
+
+            res.status(StatusCodesEnum.OK).json(user);
+        } catch (e) {
+            next(e)
+        }
+
     }
 }
 

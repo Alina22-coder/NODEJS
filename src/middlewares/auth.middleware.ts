@@ -6,6 +6,7 @@ import { IRefresh } from '../path/to/IRefresh'
 import { ITokenPayload } from '../path/to/ITokenPayload'
 import { RoleEnum } from '../enums/role.enum'
 import { userService } from '../services/user.service'
+import { TokenTypeEnum } from '../enums/token-type.enum'
 
 class AuthMiddleware {
     public async checkAccessToken(req: Request, res: Response, next: NextFunction) {
@@ -20,10 +21,10 @@ class AuthMiddleware {
                 throw new ApiError('No token provided', StatusCodesEnum.UNAUTHORIZED)
             }
 
-            const tokenPayload = tokenService.verifyToken(accessToken, 'access');
+            const tokenPayload = tokenService.verifyToken(accessToken, TokenTypeEnum.ACCESS);
 
             const isTokenExists = await tokenService.isTokenExists(accessToken,
-                "accessToken")
+                TokenTypeEnum.ACCESS)
             if (!isTokenExists) {
                 throw new ApiError('Invalid token', StatusCodesEnum.UNAUTHORIZED)
             }
@@ -51,9 +52,9 @@ class AuthMiddleware {
 
 
 
-            const tokenPayload = tokenService.verifyToken(refreshToken, 'refresh');
+            const tokenPayload = tokenService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);
 
-            const isTokenExists = await tokenService.isTokenExists(refreshToken, 'refreshToken')
+            const isTokenExists = await tokenService.isTokenExists(refreshToken, TokenTypeEnum.REFRESH)
             if (!isTokenExists) {
                 throw new ApiError('Invalid token', StatusCodesEnum.FORBIDDEN)
             }

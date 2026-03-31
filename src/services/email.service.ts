@@ -4,6 +4,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import handlebars from 'handlebars'
+import { IEmailData } from '../constants/email.constants'
 
 class EmailService {
     private transporter: Transporter;
@@ -35,11 +36,11 @@ class EmailService {
         return layoutTemplate({ body: childHtml });
     }
 
-    public async sendEmail(to: string, subject: string, templateName: string, context: Record<string, any>): Promise<void> {
+    public async sendEmail(to: string, emailData: IEmailData  context: Record<string, any>): Promise<void> {
         await this.transporter.sendMain({
             to,
-            subject,
-            html: await this._renderTemplate(templateName, context),
+            subject: emailData.subject,
+            html: await this._renderTemplate(emailData.tepmlate, context),
         })
     }
 }

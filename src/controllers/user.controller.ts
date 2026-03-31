@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 
-import { StatusCodesEnum } from "../enums/status-codes";
+import { StatusCodesEnum } from "../enums/status-codes.enum";
 import type { IUserUpdateDTO } from "../interfaces/user.interface";
 import { userService } from "../services/user.service";
 import { ITokenPayload } from "../interfaces/token.interface";
